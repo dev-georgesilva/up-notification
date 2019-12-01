@@ -2,40 +2,36 @@
 
 namespace Notification;
 
-use PHPMailer \ PHPMailer \ PHPMailer;
-use PHPMailer \ PHPMailer \ Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class Email {
 
     private $mail = \stdClass::class;
 
-    public function __construct() {
+    public function __construct($smtpDebug, $host, $user, $pass, $smtpSecure, $port, $setFromEmail, $setFromName) {
         $this->mail = new PHPMailer(true);
 
         //Server settings
-        $this->mail->SMTPDebug = 2;                                       // Enable verbose debug output
-        $this->mail->isSMTP();                                            // Send using SMTP
-        $this->mail->Host = 'email-ssl.com.br';                           // Set the SMTP server to send through
-        $this->mail->SMTPAuth = true;                                     // Enable SMTP authentication
-        $this->mail->Username = 'workflow@suaclinicaeva.com.br';          // SMTP username
-        $this->mail->Password = 'Ev@W0rkFl0w';                            // SMTP password
-        $this->mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` also accepted
-        $this->mail->Port = 465;                                          // TCP port to connect to
+        $this->mail->SMTPDebug = $smtpDebug;
+        $this->mail->isSMTP();
+        $this->mail->Host = $host;
+        $this->mail->SMTPAuth = true;
+        $this->mail->Username = $user;
+        $this->mail->Password = $pass;
+        $this->mail->SMTPSecure = $smtpSecure;
+        $this->mail->Port = $port;
         $this->mail->CharSet = 'utf-8';
         $this->mail->setLanguage('br');
-
-        //Recipients
-        $this->mail->setFrom('workflow@suaclinicaeva.com.br', 'Workflow Site');
-
-        // Content
-        $this->mail->isHTML(true);                                        // Set email format to HTML
+        $this->mail->isHTML(true);
+        $this->mail->setFrom($setFromEmail, $setFromName);
     }
 
     public function sendMail($subject, $body, $replyEmail, $replyName, $addressEmail, $addressName) {
         $this->mail->Subject = (string) $subject;
         $this->mail->Body = $body;
 
-        $this->mail->addAddress($addressEmail, $addressName);     // Add a recipient
+        $this->mail->addAddress($addressEmail, $addressName);
         $this->mail->addReplyTo($replyEmail, $replyName);
         
         try{
